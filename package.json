@@ -8,7 +8,14 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-language": "^1.0.1",
+    "@mapbox/mapbox-gl-style-spec": "^13.28.0",
     "core-js": "^3.8.3",
+    "element-ui": "^2.15.13",
+    "mapbox-gl": "^2.13.0",
+    "ol": "^7.3.0",
+    "ol-ext": "^4.0.6",
+    "ol-mapbox-style": "^10.3.4",
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2"
@@ -23,6 +30,8 @@
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "sass": "^1.32.12",
+    "sass-loader": "^8.0.2",
     "stylus": "^0.55.0",
     "stylus-loader": "^6.1.0",
     "vue-template-compiler": "^2.6.14"

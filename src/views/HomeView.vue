@@ -1,6 +1,13 @@
+<!--
+ * @Description: 
+ * @Date: 2023-03-24 09:13:48
+ * @LastEditors: Yuanxy
+ * @LastEditTime: 2023-03-24 09:27:59
+ * @FilePath: \ol-mapbox-style\src\views\HomeView.vue
+ * @Author: Yuanxy 
+-->
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
@@ -16,3 +23,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.home{
+  width: 100%;
+  height: 100%;
+  
+}
+</style>

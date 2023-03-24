@@ -1,59 +1,140 @@
+
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="wrap">
+      <div id="mapbox"></div>
+      <div class="toolbox">
+          <el-button plain @click="addLayer()">添加图层</el-button>
+          <el-button plain @click="updateLayer()">更新图层</el-button>
+          <el-button plain @click="deleteLayer()">删除图层</el-button>
+          <el-button plain @click="svgaddlayer()">填充图片</el-button>
+          <el-button plain @click="showlayer()">显示隐藏图片</el-button>
+      </div>
   </div>
 </template>
 
 <script>
+var key = "pk.eyJ1IjoiMjQ1MTc0ODYyIiwiYSI6ImNqbW82ZmE4dDBpMngza3Fvd3h2aXMxbXEifQ.JtY2C9MHBAkF6Wu2fdyTXQ";
+import { apply, updateMapboxLayer,removeMapboxLayer,addMapboxLayer,getMapboxLayer } from 'ol-mapbox-style';
+import {getSTyle} from './mapbox-style';
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+ name:'',
+ mixins:[],
+ components: {
+
+ },
+ props:{},
+ data () {
+   return {
+      map:null,
+      count:0
+   }
+ },
+ computed:{},
+ mounted(){
+  this.initLoad()
+ },
+ destroyed:{},
+ methods:{
+  async initLoad(){
+      let map =  await apply('mapbox',getSTyle() , {accessToken: key})
+      this.map = map
+  },
+  addLayer(){
+      let map = this.map
+      addMapboxLayer(map,{
+          "id": "landuse_overlay_national_park",
+          "type": "fill",
+          "source": "mapbox",
+          "source-layer": "landuse_overlay",
+          "filter": ["==", "class", "national_park"],
+          "paint": {
+              "fill-color": "#DC143C",
+              "fill-opacity": 0.75
+          },
+          "metadata": {
+              "mapbox:group": "1444849388993.3071"
+          },
+          "interactive": true
+      })
+  },
+  updateLayer(){
+      const color = ['#FFB6C1','#C71585','#FF00FF','#7B68EE','#4682B4','#00FA9A','#FFD700']
+      this.count = this.count + 1
+      if(this.count > color.length){
+          this.count = 0 
+      }
+      let map = this.map
+      updateMapboxLayer(map,{
+          "id": "hfbh-2d",
+          'type': 'fill',
+          "source": "os",
+          "source-layer": "bhbm3856",
+          "paint": {
+              "fill-color": color[this.count],
+              "fill-opacity": 0.6,
+              "fill-outline-color": "red",
+              "fill-antialias": true
+          }
+      })
+  },
+  svgaddlayer(){
+      let map = this.map
+      updateMapboxLayer(map,{
+          "id": "hfbh-2d",
+          'type': 'fill',
+          "source": "os",
+          "source-layer": "bhbm3856",
+          "paint": {
+              "fill-pattern":'grass',
+              "fill-outline-color": "red",
+              "fill-antialias": true
+          }
+      })
+  },
+  showlayer(){
+      let map = this.map
+      let layer = getMapboxLayer(map,'hfbh-2d')
+      if(layer.layout){
+          if(layer.layout.visibility){
+              if(layer.layout.visibility === 'none'){
+                  layer.layout.visibility = 'visible'
+              } else {
+                  layer.layout.visibility = 'none'
+              }
+          } else {
+              layer.layout.visibility = 'none' 
+          }
+      } else {
+          let obj = {
+              visibility:'none'
+          }
+          layer.layout = obj
+      }
+
+      updateMapboxLayer(map,layer)
+  },
+  deleteLayer(){
+      let map = this.map
+      removeMapboxLayer(map,'landuse_overlay_national_park')
   }
+ }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="stylus">
-h3
-  margin 40px 0 0
+<style scoped lang='scss'>
+.wrap,#mapbox{
+  width: 100%;
+  height: 100%;
+  float: none;
+}
 
-ul
-  list-style-type none
-  padding 0
+.toolbox{
+  display: flex;
+  z-index: 10000;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
 
-li
-  display inline-block
-  margin 0 10px
-
-a
-  color #42b983
 </style>
